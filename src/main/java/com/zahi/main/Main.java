@@ -8,18 +8,22 @@ package com.zahi.main;
 import com.zahi.controller.Browser;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
  *
- * @author BADEV
+ * @author zahi
  */
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
         Browser browser = new Browser();
-        browser.showInStage();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(browser.getView()));
+        stage.setMaximized(true);
+        stage.show();
     }
 
     /**

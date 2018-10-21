@@ -21,38 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.zahi.controller;
-
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.layout.StackPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.zahi.controller.enums;
 
 /**
- * @author zahi
  *
+ * @author zahi
  */
-public abstract class Controller implements Initializable {
+public enum JFXBrowserErrorMessage {
+    UNKNOWN_HOST_EXCEPTION("Unknown Host Exception");
+    
+    private final String message;
 
-    private final Logger logger = LoggerFactory.getLogger(Controller.class);
-    private Parent view;
-
-    public Controller(Object object, String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(Controller.class.getClassLoader().getResource(fxml));
-            loader.setController(this);
-            Parent root = loader.load();
-            view = new StackPane(root);
-        } catch (IOException e) {
-            logger.error("Error while loading FXML file", e);
-        }
+    private JFXBrowserErrorMessage(String message) {
+        this.message = message;
     }
 
-
-    public Parent getView() {
-        return view;
+    public String getMessage() {
+        return message;
     }
 }

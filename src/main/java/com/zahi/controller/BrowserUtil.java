@@ -24,35 +24,45 @@
 package com.zahi.controller;
 
 import java.io.IOException;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.layout.StackPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
- * @author zahi
  *
+ * @author zahi
  */
-public abstract class Controller implements Initializable {
+class BrowserUtil {
 
-    private final Logger logger = LoggerFactory.getLogger(Controller.class);
-    private Parent view;
+    private final static String DOMAIN_NAME_PATTERN
+            = "([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}";
 
-    public Controller(Object object, String fxml) {
+    public String getVersion() {
+        String path = "/version.txt";
+        InputStream stream = BrowserUtil.class.getResourceAsStream(path);
+        if (stream == null) {
+            return "UNKNOWN";
+        }
+        Properties props = new Properties();
         try {
-            FXMLLoader loader = new FXMLLoader(Controller.class.getClassLoader().getResource(fxml));
-            loader.setController(this);
-            Parent root = loader.load();
-            view = new StackPane(root);
+            props.load(stream);
+            stream.close();
+            return (String) props.get("version");
         } catch (IOException e) {
-            logger.error("Error while loading FXML file", e);
+            return "UNKNOWN";
         }
     }
 
+    public static boolean isValidDomainName(String query) {
+        Pattern patternDomainName = Pattern.compile(DOMAIN_NAME_PATTERN);
+        return patternDomainName.matcher(query).find();
+    }
 
-    public Parent getView() {
-        return view;
+    public static boolean isProtocolPresent(String url) {
+        return url.matches("^(http|https|ftp)://.*$");
+    }
+
+    public static String searchInGoogle(String keyword) {
+        return String.format("http://www.google.com/search?q=%s", keyword);
     }
 }

@@ -1,20 +1,41 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * The MIT License
+ *
+ * Copyright 2018 zahi.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package com.zahi.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
+import com.zahi.controller.enums.JFXBrowserErrorMessage;
+import com.zahi.controller.exception.JFXBrowserErrorException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
@@ -34,19 +55,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author zahi
  */
-public class BrowserTab extends Controller {
+class BrowserTab extends Controller {
 
     public static final String FXML_BROWSER_TAB = "views/browserTab.fxml";
     private final ObjectProperty faviconPropery = new SimpleObjectProperty();
     private final Logger logger = LoggerFactory.getLogger(BrowserTab.class);
 
     public BrowserTab() {
-        super(null, FXML_BROWSER_TAB, false);
+        super(null, FXML_BROWSER_TAB);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        super.initialize(location, resources);
         webview.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             logger.debug(
                     String.format(
@@ -93,6 +113,30 @@ public class BrowserTab extends Controller {
             }
         });
 
+        webview.getEngine().locationProperty().addListener((observable, oldValue, newValue) -> {
+            Task<Integer> tload = new Task() {
+                @Override
+                protected Integer call() throws Exception {
+                    try {
+                        URL url = new URL(newValue);
+                        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+                        return httpCon.getResponseCode();
+                    } catch (UnknownHostException e) {
+                        throw new JFXBrowserErrorException(JFXBrowserErrorMessage.UNKNOWN_HOST_EXCEPTION);
+                    }
+                }
+            };
+            tload.setOnFailed((event) -> {
+                if (tload.getException() instanceof JFXBrowserErrorException) {
+                    webview.getEngine().load(BrowserTab.class.getResource("/html/unknown-host.html").toExternalForm());
+                }
+            });
+            tload.setOnSucceeded((event) -> {
+                logger.debug(String.format("Location: %s, Response code: %s", newValue, tload.getValue()));
+            });
+            new Thread(tload).start();
+        });
+
         webview.getEngine().getHistory().currentIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 ObservableList<WebHistory.Entry> entryList = webview.getEngine().getHistory().getEntries();
@@ -123,6 +167,21 @@ public class BrowserTab extends Controller {
         URI uri = new URI(url);
         String domain = uri.getHost();
         return domain;
+    }
+
+    private void loadUrl() {
+        if (!tfSeachArea.getText().isEmpty()) {
+            if (BrowserUtil.isValidDomainName(tfSeachArea.getText())) {
+                if (!BrowserUtil.isProtocolPresent(tfSeachArea.getText())) {
+                    webview.getEngine().load(String.format("http://%s", tfSeachArea.getText()));
+                } else {
+                    webview.getEngine().load(tfSeachArea.getText());
+                }
+            }
+            else {
+                webview.getEngine().load(BrowserUtil.searchInGoogle(tfSeachArea.getText()));
+            }
+        }
     }
 
     /////////////////////////////////////////
@@ -156,16 +215,12 @@ public class BrowserTab extends Controller {
 
     @FXML
     void goAction(ActionEvent event) {
-        if (!tfSeachArea.getText().isEmpty()) {
-            webview.getEngine().load(tfSeachArea.getText());
-        }
+        loadUrl();
     }
 
     @FXML
     void searchAction(ActionEvent event) {
-        if (!tfSeachArea.getText().isEmpty()) {
-            webview.getEngine().load(tfSeachArea.getText());
-        }
+        loadUrl();
     }
 
     @FXML

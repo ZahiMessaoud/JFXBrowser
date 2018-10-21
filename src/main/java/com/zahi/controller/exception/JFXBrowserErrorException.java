@@ -21,38 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.zahi.controller;
+package com.zahi.controller.exception;
 
-import java.io.IOException;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.layout.StackPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zahi.controller.enums.JFXBrowserErrorMessage;
 
 /**
- * @author zahi
  *
+ * @author zahi
  */
-public abstract class Controller implements Initializable {
+public class JFXBrowserErrorException extends Exception {
 
-    private final Logger logger = LoggerFactory.getLogger(Controller.class);
-    private Parent view;
-
-    public Controller(Object object, String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(Controller.class.getClassLoader().getResource(fxml));
-            loader.setController(this);
-            Parent root = loader.load();
-            view = new StackPane(root);
-        } catch (IOException e) {
-            logger.error("Error while loading FXML file", e);
-        }
+    public JFXBrowserErrorException(String message) {
+        super(message);
     }
-
-
-    public Parent getView() {
-        return view;
+    
+    public JFXBrowserErrorException(JFXBrowserErrorMessage errorMsg) {
+        super(errorMsg.getMessage());
     }
 }

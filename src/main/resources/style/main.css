@@ -1,0 +1,46 @@
+* {
+    -fx-main-color: #3434DA;
+    -fx-second-color: #5555E9;
+    -fx-third-color: #9D9DF8;
+    -fx-fourth-color: #CECEFD;
+}
+
+.browser-tab .header {
+    -fx-border-style:  dashed;
+    -fx-border-width:  0 0 2 0;
+    -fx-border-color:  lightgray;
+    -fx-background-color: -fx-main-color;
+}
+
+.browser-tab .header #btnGo {
+    -fx-background-color: -fx-fourth-color;
+}
+
+.browser-tab .header .font-awesome {
+    -fx-fill: -fx-fourth-color;
+}
+
+.browser-tabedpane {
+    -fx-background-color: -fx-second-color;
+}
+
+.browser-tabedpane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.browser-tabedpane .tab {
+    -fx-background-color: -fx-third-color;
+}
+
+.browser-tabedpane .tab:selected {
+    -fx-background-color: -fx-fourth-color;
+}
+
+.browser-tabedpane  .tab .tab-label { 
+    -fx-padding: 5px;
+    -fx-alignment: CENTER;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+

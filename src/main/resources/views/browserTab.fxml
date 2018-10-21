@@ -11,32 +11,32 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" styleClass="browser-tab" stylesheets="@../style/main.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox spacing="10.0" style="-fx-border-color: lightgray; -fx-border-style: dashed; -fx-border-width: 0 0 2 0;">
+            <HBox spacing="10.0" styleClass="header">
                <children>
                   <HBox>
                      <children>
                         <JFXButton fx:id="btnHistPrev" contentDisplay="GRAPHIC_ONLY" disable="true" onAction="#histPrevAction">
                            <graphic>
-                              <FontAwesomeIconView glyphName="ARROW_LEFT" size="20" />
+                              <FontAwesomeIconView glyphName="ARROW_LEFT" size="20" styleClass="font-awesome" />
                            </graphic>
                         </JFXButton>
                         <JFXButton fx:id="btnHistNext" contentDisplay="GRAPHIC_ONLY" disable="true" onAction="#histNextAction">
                            <graphic>
-                              <FontAwesomeIconView glyphName="ARROW_RIGHT" size="20" />
+                              <FontAwesomeIconView glyphName="ARROW_RIGHT" size="20" styleClass="font-awesome" />
                            </graphic>
                         </JFXButton>
                         <JFXButton fx:id="btnCancel" contentDisplay="GRAPHIC_ONLY" disable="true" onAction="#cancelAction">
                            <graphic>
-                              <FontAwesomeIconView glyphName="CLOSE" size="20" />
+                              <FontAwesomeIconView glyphName="CLOSE" size="20" styleClass="font-awesome" />
                            </graphic>
                         </JFXButton>
                         <JFXButton fx:id="btnReload" contentDisplay="GRAPHIC_ONLY" onAction="#reloadAction">
                            <graphic>
-                              <FontAwesomeIconView glyphName="REFRESH" size="20" />
+                              <FontAwesomeIconView glyphName="REFRESH" size="20" styleClass="font-awesome" />
                            </graphic>
                         </JFXButton>
                      </children>
@@ -48,7 +48,7 @@
                   </TextField>
                   <HBox spacing="5.0">
                      <children>
-                        <JFXButton fx:id="btnGo" disable="true" onAction="#goAction" style="-fx-background-color: lightgray;" text="Go">
+                        <JFXButton id="btnGo" fx:id="btnGo" disable="true" onAction="#goAction" style="-fx-background-color: lightgray;" text="Go">
                            <font>
                               <Font size="14.0" />
                            </font>
