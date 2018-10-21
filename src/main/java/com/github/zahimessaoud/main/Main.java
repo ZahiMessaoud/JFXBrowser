@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.zahi.main;
+package com.github.zahimessaoud.main;
 
-import com.zahi.controller.Browser;
+import com.github.zahimessaoud.controller.Browser;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.scene.Scene;

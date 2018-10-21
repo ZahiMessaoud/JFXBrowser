@@ -21,22 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.zahi.controller.enums;
+package com.github.zahimessaoud.exception;
+
+import com.github.zahimessaoud.enums.JFXBrowserErrorMessage;
 
 /**
  *
  * @author zahi
  */
-public enum JFXBrowserErrorMessage {
-    UNKNOWN_HOST_EXCEPTION("Unknown Host Exception");
-    
-    private final String message;
+public class JFXBrowserErrorException extends Exception {
 
-    private JFXBrowserErrorMessage(String message) {
-        this.message = message;
+    public JFXBrowserErrorException(String message) {
+        super(message);
     }
-
-    public String getMessage() {
-        return message;
+    
+    public JFXBrowserErrorException(JFXBrowserErrorMessage errorMsg) {
+        super(errorMsg.getMessage());
     }
 }
