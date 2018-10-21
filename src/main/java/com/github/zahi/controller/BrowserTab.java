@@ -23,8 +23,8 @@
  */
 package com.github.zahi.controller;
 
-import com.github.zahimessaoud.enums.JFXBrowserErrorMessage;
-import com.github.zahimessaoud.exception.JFXBrowserErrorException;
+import com.github.zahi.enums.JFXBrowserErrorMessage;
+import com.github.zahi.exception.JFXBrowserErrorException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
 import java.awt.image.BufferedImage;

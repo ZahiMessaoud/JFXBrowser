@@ -23,7 +23,7 @@
  */
 package com.github.zahi.exception;
 
-import com.github.zahimessaoud.enums.JFXBrowserErrorMessage;
+import com.github.zahi.enums.JFXBrowserErrorMessage;
 
 /**
  *
