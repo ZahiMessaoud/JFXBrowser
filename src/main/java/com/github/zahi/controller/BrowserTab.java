@@ -27,12 +27,7 @@ import com.github.zahi.enums.JFXBrowserErrorMessage;
 import com.github.zahi.exception.JFXBrowserErrorException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ResourceBundle;
@@ -40,14 +35,12 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +87,9 @@ class BrowserTab extends Controller {
                     Task<ImageView> tFavIcon = new Task() {
                         @Override
                         protected ImageView call() throws Exception {
-                            return getFavicon(webview.getEngine().getLocation());
+                            return new ImageView(
+                                    BrowserUtil.getFavicon(webview.getEngine().getLocation())
+                            );
                         }
                     };
                     tFavIcon.setOnSucceeded((event) -> {
@@ -156,30 +151,16 @@ class BrowserTab extends Controller {
     /////////////////////////////////////////
     // Methods
     /////////////////////////////////////////
-    private ImageView getFavicon(String url) throws URISyntaxException, MalformedURLException, IOException {
-        String googleService = "https://www.google.com/s2/favicons?domain=" + getBaseName(url);
-        BufferedImage bufImg = ImageIO.read(new URL(googleService));
-        ImageView imageview = new ImageView(SwingFXUtils.toFXImage(bufImg, null));
-        return imageview;
-    }
-
-    private String getBaseName(String url) throws URISyntaxException, MalformedURLException {
-        URI uri = new URI(url);
-        String domain = uri.getHost();
-        return domain;
-    }
-
-    private void loadUrl() {
-        if (!tfSeachArea.getText().isEmpty()) {
-            if (BrowserUtil.isValidDomainName(tfSeachArea.getText())) {
-                if (!BrowserUtil.isProtocolPresent(tfSeachArea.getText())) {
-                    webview.getEngine().load(String.format("http://%s", tfSeachArea.getText()));
+    public void loadUrl(String url) {
+        if (!url.isEmpty()) {
+            if (BrowserUtil.isValidDomainName(url)) {
+                if (!BrowserUtil.isProtocolPresent(url)) {
+                    webview.getEngine().load(String.format("http://%s", url));
                 } else {
-                    webview.getEngine().load(tfSeachArea.getText());
+                    webview.getEngine().load(url);
                 }
-            }
-            else {
-                webview.getEngine().load(BrowserUtil.searchInGoogle(tfSeachArea.getText()));
+            } else {
+                webview.getEngine().load(BrowserUtil.searchInGoogle(url));
             }
         }
     }
@@ -215,12 +196,12 @@ class BrowserTab extends Controller {
 
     @FXML
     void goAction(ActionEvent event) {
-        loadUrl();
+        loadUrl(tfSeachArea.getText());
     }
 
     @FXML
     void searchAction(ActionEvent event) {
-        loadUrl();
+        loadUrl(tfSeachArea.getText());
     }
 
     @FXML

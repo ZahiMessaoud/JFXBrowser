@@ -23,10 +23,19 @@
  */
 package com.github.zahi.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -64,5 +73,17 @@ class BrowserUtil {
 
     public static String searchInGoogle(String keyword) {
         return String.format("http://www.google.com/search?q=%s", keyword);
+    }
+
+    public static Image getFavicon(String url) throws URISyntaxException, MalformedURLException, IOException {
+        String googleService = "https://www.google.com/s2/favicons?domain=" + getBaseName(url);
+        BufferedImage bufImg = ImageIO.read(new URL(googleService));
+        return SwingFXUtils.toFXImage(bufImg, null);
+    }
+
+    public static String getBaseName(String url) throws URISyntaxException, MalformedURLException {
+        URI uri = new URI(url);
+        String domain = uri.getHost();
+        return domain;
     }
 }

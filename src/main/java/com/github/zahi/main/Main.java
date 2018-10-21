@@ -20,6 +20,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Browser browser = new Browser();
+//        browser.browse("google");
         Stage stage = new Stage();
         stage.setScene(new Scene(browser.getView()));
         stage.setMaximized(true);

@@ -24,6 +24,7 @@
 package com.github.zahi.controller;
 
 import com.jfoenix.controls.JFXSpinner;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -37,19 +38,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author zahi
  */
-public class Browser extends Controller {
+public final class Browser extends Controller {
 
     public static final String FXML_BROWSER = "views/browser.fxml";
     private final Logger logger = LoggerFactory.getLogger(Browser.class);
 
     public Browser() {
         super(null, FXML_BROWSER);
+        loadHtmlFile(new File(BrowserTab.class.getResource("/html/welcome.html").toExternalForm()));
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        addNewTab();
-
         tabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals(tab)) {
                 addNewTab();
@@ -60,7 +60,7 @@ public class Browser extends Controller {
     /////////////////////////////////////////
     // Methods
     /////////////////////////////////////////
-    private void addNewTab() {
+    private BrowserTab addNewTab() {
         BrowserTab browserTab = new BrowserTab();
 
         Tab tmpTab = new Tab("new Tab");
@@ -85,8 +85,22 @@ public class Browser extends Controller {
         tmpTab.setContent(browserTab.getView());
         tabPane.getTabs().add(tabPane.getTabs().size() - 1, tmpTab);
         tabPane.getSelectionModel().select(tmpTab);
+
+        return browserTab;
+    }
+
+    public void browse(String url) {
+        logger.debug(url);
+        BrowserTab browserTab = addNewTab();
+        browserTab.loadUrl(url);
     }
     
+    public void loadHtmlFile(File htmlFile) {
+        logger.debug(htmlFile.getPath());
+        BrowserTab browserTab = addNewTab();
+        browserTab.getWebview().getEngine().load(htmlFile.getPath());
+    }
+
     /////////////////////////////////////////
     // FXML Variables & Methods
     /////////////////////////////////////////
