@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.zahi.controller;
+package com.github.zahi.controller;
 
 import com.jfoenix.controls.JFXSpinner;
 import java.net.URL;

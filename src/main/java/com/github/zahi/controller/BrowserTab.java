@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.zahi.controller;
+package com.github.zahi.controller;
 
+import com.github.zahimessaoud.enums.JFXBrowserErrorMessage;
+import com.github.zahimessaoud.exception.JFXBrowserErrorException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSpinner;
-import com.zahi.controller.enums.JFXBrowserErrorMessage;
-import com.zahi.controller.exception.JFXBrowserErrorException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
