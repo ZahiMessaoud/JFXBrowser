@@ -30,6 +30,11 @@ import com.jfoenix.controls.JFXSpinner;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -41,6 +46,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +60,7 @@ class BrowserTab extends Controller {
     public static final String FXML_BROWSER_TAB = "views/browserTab.fxml";
     private final ObjectProperty faviconPropery = new SimpleObjectProperty();
     private final Logger logger = LoggerFactory.getLogger(BrowserTab.class);
+    private static final LinkedHashSet<HistEntry> WEB_HIST_ENTERIES = new LinkedHashSet<>();
 
     public BrowserTab() {
         super(null, FXML_BROWSER_TAB);
@@ -134,6 +142,9 @@ class BrowserTab extends Controller {
 
         webview.getEngine().getHistory().currentIndexProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                WEB_HIST_ENTERIES.add(
+                        new HistEntry(webview.getEngine().getHistory().getEntries().get(newValue.intValue()))
+                );
                 ObservableList<WebHistory.Entry> entryList = webview.getEngine().getHistory().getEntries();
 
                 btnHistNext.setDisable(newValue.intValue() == entryList.size() - 1);
@@ -145,6 +156,34 @@ class BrowserTab extends Controller {
         tfSeachArea.textProperty().addListener((observable, oldValue, newValue) -> {
             btnGo.setDisable(newValue.isEmpty());
         });
+
+        AutoCompletionBinding<HistEntry> atCsltBind = TextFields.bindAutoCompletion(tfSeachArea, (param) -> {
+            List<HistEntry> shownSuggestions = new ArrayList<>();
+            String text = tfSeachArea.getText();
+            if (!text.isEmpty()) {
+                for (HistEntry entry : WEB_HIST_ENTERIES) {
+                    if (BrowserUtil.isProtocolPresent(entry.getUrl())) {
+                        if (entry.getUrl().contains(text) || entry.getTitle().contains(text)) {
+                            shownSuggestions.add(entry);
+                        }
+                    }
+                }
+                shownSuggestions.sort((o1, o2) -> {
+                    return o1.getLastVisitedDate().compareTo(o2.getLastVisitedDate());
+                });
+            }
+            shownSuggestions.add(0, new HistEntry(text));
+            return shownSuggestions;
+        });
+
+        atCsltBind.setVisibleRowCount(10);
+
+        atCsltBind.setOnAutoCompleted((event) -> {
+            tfSeachArea.setText(event.getCompletion().getUrl());
+            tfSeachArea.fireEvent(new ActionEvent());
+        });
+
+        atCsltBind.prefWidthProperty().bind(tfSeachArea.widthProperty());
 
     }
 
@@ -239,4 +278,66 @@ class BrowserTab extends Controller {
 
     @FXML
     private JFXButton btnCancel;
+
+    private class HistEntry {
+
+        private final WebHistory.Entry entry;
+        private String text;
+
+        public HistEntry(WebHistory.Entry entry) {
+            this.entry = entry;
+        }
+
+        public HistEntry(String text) {
+            this.entry = null;
+            this.text = text;
+        }
+
+        public String getTitle() {
+            return entry != null ? entry.getTitle() : "";
+        }
+
+        public String getUrl() {
+            return entry != null ? entry.getUrl() : text;
+        }
+
+        public Date getLastVisitedDate() {
+            return entry != null ? entry.getLastVisitedDate() : null;
+        }
+
+        @Override
+        public String toString() {
+            return entry != null
+                    ? String.format("%s %s", entry.getTitle(), entry.getUrl())
+                    : text;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 53 * hash + Objects.hashCode(this.entry);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final HistEntry other = (HistEntry) obj;
+            if (this.entry == null || other.entry == null ) {
+                return false;
+            }
+            if (!Objects.equals(this.entry.getUrl(), other.entry.getUrl())) {
+                return false;
+            }
+            return Objects.equals(this.entry.getTitle(), other.entry.getTitle());
+        }
+    }
 }
