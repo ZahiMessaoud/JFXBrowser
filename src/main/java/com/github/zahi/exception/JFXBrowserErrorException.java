@@ -31,11 +31,18 @@ import com.github.zahi.enums.JFXBrowserErrorMessage;
  */
 public class JFXBrowserErrorException extends Exception {
 
+    private JFXBrowserErrorMessage errorMsg;
+
     public JFXBrowserErrorException(String message) {
         super(message);
     }
-    
+
     public JFXBrowserErrorException(JFXBrowserErrorMessage errorMsg) {
         super(errorMsg.getMessage());
+        this.errorMsg = errorMsg;
+    }
+
+    public JFXBrowserErrorMessage getErrorMsg() {
+        return errorMsg;
     }
 }

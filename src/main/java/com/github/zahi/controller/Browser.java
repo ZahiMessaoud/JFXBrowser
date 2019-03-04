@@ -24,7 +24,6 @@
 package com.github.zahi.controller;
 
 import com.jfoenix.controls.JFXSpinner;
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -45,7 +44,7 @@ public final class Browser extends Controller {
 
     public Browser() {
         super(null, FXML_BROWSER);
-        loadHtmlFile(new File(BrowserTab.class.getResource("/html/welcome.html").toExternalForm()));
+        loadHtmlFile(getClass().getResource("/html/welcome.html").toExternalForm());
     }
 
     @Override
@@ -94,11 +93,11 @@ public final class Browser extends Controller {
         BrowserTab browserTab = addNewTab();
         browserTab.loadUrl(url);
     }
-    
-    public void loadHtmlFile(File htmlFile) {
-        logger.debug(htmlFile.getPath());
+
+    public void loadHtmlFile(String htmlFilePath) {
+        logger.debug("loading: " + htmlFilePath);
         BrowserTab browserTab = addNewTab();
-        browserTab.getWebview().getEngine().load(htmlFile.getPath());
+        browserTab.getWebview().getEngine().load(htmlFilePath);
     }
 
     /////////////////////////////////////////

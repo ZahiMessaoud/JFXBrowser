@@ -28,8 +28,8 @@ package com.github.zahi.enums;
  * @author zahi
  */
 public enum JFXBrowserErrorMessage {
-    UNKNOWN_HOST_EXCEPTION("Unknown Host Exception");
-    
+    UNKNOWN_HOST_EXCEPTION("Unknown Host Exception"),
+    SSL_HAND_SHAKE_EXCEPTION("unable to find valid certification path to requested target");
     private final String message;
 
     private JFXBrowserErrorMessage(String message) {

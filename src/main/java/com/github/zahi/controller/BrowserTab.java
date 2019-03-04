@@ -46,6 +46,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.WebHistory;
 import javafx.scene.web.WebView;
+import javax.net.ssl.SSLHandshakeException;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 import org.slf4j.Logger;
@@ -68,6 +69,8 @@ class BrowserTab extends Controller {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        webview.getEngine().setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36");
+
         webview.getEngine().getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             logger.debug(
                     String.format(
@@ -126,12 +129,23 @@ class BrowserTab extends Controller {
                         return httpCon.getResponseCode();
                     } catch (UnknownHostException e) {
                         throw new JFXBrowserErrorException(JFXBrowserErrorMessage.UNKNOWN_HOST_EXCEPTION);
+                    } catch (SSLHandshakeException e) {
+                        throw new JFXBrowserErrorException(JFXBrowserErrorMessage.SSL_HAND_SHAKE_EXCEPTION);
                     }
+
                 }
             };
             tload.setOnFailed((event) -> {
                 if (tload.getException() instanceof JFXBrowserErrorException) {
-                    webview.getEngine().load(BrowserTab.class.getResource("/html/unknown-host.html").toExternalForm());
+                    JFXBrowserErrorMessage errorMsg = ((JFXBrowserErrorException) tload.getException()).getErrorMsg();
+                    switch (errorMsg) {
+                        case UNKNOWN_HOST_EXCEPTION:
+                            webview.getEngine().load(getClass().getResource("/html/unknown-host.html").toExternalForm());
+                            break;
+                        case SSL_HAND_SHAKE_EXCEPTION:
+                            webview.getEngine().load(getClass().getResource("/html/cert-invalid.html").toExternalForm());
+                            break;
+                    }
                 }
             });
             tload.setOnSucceeded((event) -> {
@@ -207,15 +221,15 @@ class BrowserTab extends Controller {
     /////////////////////////////////////////
     // Getters & Setters
     /////////////////////////////////////////
-    public WebView getWebview() {
+    WebView getWebview() {
         return webview;
     }
 
-    public JFXSpinner getSpinner() {
+    JFXSpinner getSpinner() {
         return spinner;
     }
 
-    public ObjectProperty getFaviconPropery() {
+    ObjectProperty getFaviconPropery() {
         return faviconPropery;
     }
 
@@ -331,7 +345,7 @@ class BrowserTab extends Controller {
                 return false;
             }
             final HistEntry other = (HistEntry) obj;
-            if (this.entry == null || other.entry == null ) {
+            if (this.entry == null || other.entry == null) {
                 return false;
             }
             if (!Objects.equals(this.entry.getUrl(), other.entry.getUrl())) {
